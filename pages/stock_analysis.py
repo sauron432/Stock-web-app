@@ -5,6 +5,8 @@ import plotly.graph_objects as go
 import datetime
 # import ta 
 
+from utils.plotly_fig import plotly_table
+
 st.set_page_config(
     page_title='Stock Analysis',
     page_icon='page_with_curl',
@@ -68,7 +70,7 @@ with col1:
         stock.info['beta'],
         stock.info.get('trailingEps'),
         trailing_pe]
-    st.table(df)
+    st.plotly_chart(plotly_table(df), use_container_width=True)
 
 with col2:
     # Debt to Equity fallback
@@ -97,7 +99,7 @@ with col2:
         debt_to_equity,
         return_on_equity
     ]
-    st.table(df)
+    st.plotly_chart(plotly_table(df), use_container_width=True)
 
 data = yf.download(ticker, start=start_date, end=end_date)
 
@@ -110,4 +112,87 @@ daily_change = latest_close - prev_close
 col1.metric("Daily change", f"${latest_close:.2f}", f"{daily_change:.2f}")
 last_10 = data.tail(10).sort_index(ascending = False).round(3)
 st.write('### Last 10 days data')
-st.table(last_10)
+# st.table(last_10)
+st.plotly_chart(plotly_table(last_10), use_container_width=True)
+
+
+col1, col2, col3,col4, col5, col6,col7, col8, col9,col10, col11, col12 = st.columns([1,1,1,1,1,1,1,1,1,1,1,1])
+
+num_period = ''
+with col1:
+    if st.button('5D'):
+        num_period = '5d'
+with col2:
+    if st.button('1M'):
+        num_period = '1mo'
+with col3:
+    if st.button('6M'):
+        num_period = '6mo'
+with col4:
+    if st.button('YTD'):
+        num_period = 'ytd'
+with col5:
+    if st.button('1Y'):
+        num_period = '1y'
+with col6:
+    if st.button('5Y'):
+        num_period = '5y'
+with col7:
+    if st.button('MAX'):
+        num_period = 'max'
+
+
+
+col1, col2, col3 = st.columns([1,1,4])
+with col1:
+    chart_type = st.selectbox('',('Candle','Line'))
+with col2:
+    if chart_type == 'Candle':
+        indicators = st.selectbox('',('RSI','MACD'))
+    else:
+        indicators = st.selectbox('',('RSI','Moving Average','MACD'))
+
+ticker = yf.Ticker(ticker)
+new_df = ticker_.history(period = 'max')
+data1 = ticker_.history(period = ' max')
+
+if num_period == '':
+
+    if chart_type == 'Candle' and indicators == "RSI":
+        st.plotly_chart(candlestick(data1,'1y'), use_container_width=True)
+        st.plotly_chart(RSI(data1,'1y'), use_container_width=True)
+
+    if chart_type == 'Candle' and indicators == "MACD":
+        st.plotly_chart(candlestick(data1,'1y'), use_container_width=True)
+        st.plotly_chart(MACD(data1,'1y'), use_container_width=True)
+
+    if chart_type == 'Line' and indicators == "RSI":
+        st.plotly_chart(close_chart(data1,'1y'), use_container_width=True)
+        st.plotly_chart(RSI(data1,'1y'), use_container_width=True)
+        
+    if chart_type == 'Line' and indicators == "MACD":
+        st.plotly_chart(close_chart(data1,'1y'), use_container_width=True)
+        st.plotly_chart(MACD(data1,'1y'), use_container_width=True)
+
+    if chart_type == 'Line' and indicators == "Moving Average":
+        st.plotly_chart(Moving_average(data1, '1y', use_container_width=True))
+
+else:
+    if chart_type == 'Candle' and indicators == "RSI":
+        st.plotly_chart(candlestick(data1,num_period), use_container_width=True)
+        st.plotly_chart(RSI(data1,'1y'), use_container_width=True)
+
+    if chart_type == 'Candle' and indicators == "MACD":
+        st.plotly_chart(candlestick(data1,num_period), use_container_width=True)
+        st.plotly_chart(MACD(data1,num_period), use_container_width=True)
+
+    if chart_type == 'Line' and indicators == "RSI":
+        st.plotly_chart(close_chart(data1,num_period), use_container_width=True)
+        st.plotly_chart(RSI(data1,'1y'), use_container_width=True)
+        
+    if chart_type == 'Line' and indicators == "MACD":
+        st.plotly_chart(close_chart(data1,num_period), use_container_width=True)
+        st.plotly_chart(MACD(data1,'1y'), use_container_width=True)
+
+    if chart_type == 'Line' and indicators == "Moving Average":
+        st.plotly_chart(Moving_average(data1, num_period, use_container_width=True))
