@@ -191,7 +191,7 @@ else:
         st.plotly_chart(close_chart(data1, num_period), use_container_width=True)
         st.plotly_chart(RSI(data1, num_period), use_container_width=True)
 
-    if chart_type == 'Line' and indicators == "MACD":
+    if chart_type == 'Line' and x == "MACD":
         st.plotly_chart(close_chart(data1, num_period), use_container_width=True)
         st.plotly_chart(MACD(data1, num_period), use_container_width=True)
 

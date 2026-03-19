@@ -14,6 +14,7 @@ axis_style = dict(
     zerolinecolor="#444444",
 )
 
+
 def plotly_table(df, max_height=400):
     index_vals = [str(i)[:10] for i in df.index.tolist()]
 
@@ -116,25 +117,31 @@ def close_chart(dataframe, num_period=False):
     )
     fig.update_xaxes(rangeslider_visible=True)
     fig.update_layout(
-    title=dict(
-        text="Price Chart",   # change per function
-        font=dict(color="white", size=16),
-        x=0.5,                     # left align
-    ),
-    plot_bgcolor="#1a1a2e",
-    paper_bgcolor="#0f0f1a",
-    font=dict(color="white"),
-    xaxis=axis_style,
-    yaxis=axis_style,
-    # Border via margin + shape
-    margin=dict(l=10, r=10, t=40, b=10),
-    shapes=[dict(
-        type="rect",
-        xref="paper", yref="paper",
-        x0=0, y0=0, x1=1, y1=1,
-        line=dict(color="#444466", width=1),
-    )]
-)
+        title=dict(
+            text="Price Chart",  # change per function
+            font=dict(color="white", size=16),
+            x=0.5,  # left align
+        ),
+        plot_bgcolor="#1a1a2e",
+        paper_bgcolor="#0f0f1a",
+        font=dict(color="white"),
+        xaxis=axis_style,
+        yaxis=axis_style,
+        # Border via margin + shape
+        margin=dict(l=10, r=10, t=40, b=10),
+        shapes=[
+            dict(
+                type="rect",
+                xref="paper",
+                yref="paper",
+                x0=0,
+                y0=0,
+                x1=1,
+                y1=1,
+                line=dict(color="#444466", width=1),
+            )
+        ],
+    )
     return fig
 
 
@@ -153,25 +160,31 @@ def candle_stick(dataframe, num_period):
         )
     )
     fig.update_layout(
-    title=dict(
-        text="Candlestick Chart",   # change per function
-        font=dict(color="white", size=16),
-        x=0.5,                     # left align
-    ),
-    plot_bgcolor="#1a1a2e",
-    paper_bgcolor="#0f0f1a",
-    font=dict(color="white"),
-    xaxis=axis_style,
-    yaxis=axis_style,
-    # Border via margin + shape
-    margin=dict(l=10, r=10, t=40, b=10),
-    shapes=[dict(
-        type="rect",
-        xref="paper", yref="paper",
-        x0=0, y0=0, x1=1, y1=1,
-        line=dict(color="#444466", width=1),
-    )]
-)
+        title=dict(
+            text="Candlestick Chart",  # change per function
+            font=dict(color="white", size=16),
+            x=0.5,  # left align
+        ),
+        plot_bgcolor="#1a1a2e",
+        paper_bgcolor="#0f0f1a",
+        font=dict(color="white"),
+        xaxis=axis_style,
+        yaxis=axis_style,
+        # Border via margin + shape
+        margin=dict(l=10, r=10, t=40, b=10),
+        shapes=[
+            dict(
+                type="rect",
+                xref="paper",
+                yref="paper",
+                x0=0,
+                y0=0,
+                x1=1,
+                y1=1,
+                line=dict(color="#444466", width=1),
+            )
+        ],
+    )
     return fig
 
 
@@ -214,25 +227,31 @@ def RSI(dataframe, num_period):
     )
 
     fig.update_layout(
-    title=dict(
-        text="RSI (14)",   # change per function
-        font=dict(color="white", size=16),
-        x=0.5,                     # left align
-    ),
-    plot_bgcolor="#1a1a2e",
-    paper_bgcolor="#0f0f1a",
-    font=dict(color="white"),
-    xaxis=axis_style,
-    yaxis=axis_style,
-    # Border via margin + shape
-    margin=dict(l=10, r=10, t=40, b=10),
-    shapes=[dict(
-        type="rect",
-        xref="paper", yref="paper",
-        x0=0, y0=0, x1=1, y1=1,
-        line=dict(color="#444466", width=1),
-    )]
-)
+        title=dict(
+            text="RSI (14)",  # change per function
+            font=dict(color="white", size=16),
+            x=0.5,  # left align
+        ),
+        plot_bgcolor="#1a1a2e",
+        paper_bgcolor="#0f0f1a",
+        font=dict(color="white"),
+        xaxis=axis_style,
+        yaxis=axis_style,
+        # Border via margin + shape
+        margin=dict(l=10, r=10, t=40, b=10),
+        shapes=[
+            dict(
+                type="rect",
+                xref="paper",
+                yref="paper",
+                x0=0,
+                y0=0,
+                x1=1,
+                y1=1,
+                line=dict(color="#444466", width=1),
+            )
+        ],
+    )
     return fig
 
 
@@ -305,25 +324,31 @@ def Moving_average(dataframe, num_period=False):
     )
     fig.update_xaxes(rangeslider_visible=True)
     fig.update_layout(
-    title=dict(
-        text="Moving Average",   # change per function
-        font=dict(color="white", size=16),
-        x=0.5,                     # left align
-    ),
-    plot_bgcolor="#1a1a2e",
-    paper_bgcolor="#0f0f1a",
-    font=dict(color="white"),
-    xaxis=axis_style,
-    yaxis=axis_style,
-    # Border via margin + shape
-    margin=dict(l=10, r=10, t=40, b=10),
-    shapes=[dict(
-        type="rect",
-        xref="paper", yref="paper",
-        x0=0, y0=0, x1=1, y1=1,
-        line=dict(color="#444466", width=1),
-    )]
-)
+        title=dict(
+            text="Moving Average",  # change per function
+            font=dict(color="white", size=16),
+            x=0.5,  # left align
+        ),
+        plot_bgcolor="#1a1a2e",
+        paper_bgcolor="#0f0f1a",
+        font=dict(color="white"),
+        xaxis=axis_style,
+        yaxis=axis_style,
+        # Border via margin + shape
+        margin=dict(l=10, r=10, t=40, b=10),
+        shapes=[
+            dict(
+                type="rect",
+                xref="paper",
+                yref="paper",
+                x0=0,
+                y0=0,
+                x1=1,
+                y1=1,
+                line=dict(color="#444466", width=1),
+            )
+        ],
+    )
 
 
 def MACD(dataframe, num_period):
@@ -366,23 +391,62 @@ def MACD(dataframe, num_period):
         )
     )
     fig.update_layout(
-    title=dict(
-        text="MACD",   # change per function
-        font=dict(color="white", size=16),
-        x=0.5,                     # left align
-    ),
-    plot_bgcolor="#1a1a2e",
-    paper_bgcolor="#0f0f1a",
-    font=dict(color="white"),
-    xaxis=axis_style,
-    yaxis=axis_style,
-    # Border via margin + shape
-    margin=dict(l=10, r=10, t=40, b=10),
-    shapes=[dict(
-        type="rect",
-        xref="paper", yref="paper",
-        x0=0, y0=0, x1=1, y1=1,
-        line=dict(color="#444466", width=1),
-    )]
-)
+        title=dict(
+            text="MACD",  # change per function
+            font=dict(color="white", size=16),
+            x=0.5,  # left align
+        ),
+        plot_bgcolor="#1a1a2e",
+        paper_bgcolor="#0f0f1a",
+        font=dict(color="white"),
+        xaxis=axis_style,
+        yaxis=axis_style,
+        # Border via margin + shape
+        margin=dict(l=10, r=10, t=40, b=10),
+        shapes=[
+            dict(
+                type="rect",
+                xref="paper",
+                yref="paper",
+                x0=0,
+                y0=0,
+                x1=1,
+                y1=1,
+                line=dict(color="#444466", width=1),
+            )
+        ],
+    )
+    return fig
+
+
+def moving_average_forecast(forecast):
+    forecast = forecast.copy()
+    forecast.index = pd.to_datetime(forecast.index)  # ensure datetime index
+    
+    split = len(forecast) - 30  # last 30 rows are forecast
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=forecast.index[:split],
+        y=forecast["Close"].iloc[:split],
+        mode="lines",
+        name="Close Price",
+        line=dict(width=2, color="#5ab7ff"),
+    ))
+    fig.add_trace(go.Scatter(
+        x=forecast.index[split:],
+        y=forecast["Close"].iloc[split:],
+        mode="lines",
+        name="Forecast",
+        line=dict(width=2, color="orange", dash="dash"),
+    ))
+    fig.update_xaxes(rangeslider_visible=True)
+    fig.update_layout(
+        height=500,
+        margin=dict(l=0, r=20, t=20, b=0),
+        plot_bgcolor="#1a1a2e",
+        paper_bgcolor="#0f0f1a",
+        font=dict(color="white"),
+        legend=dict(yanchor="top", xanchor="right"),
+    )
     return fig
