@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import yfinance as yf
 import datetime
-# import ta 
 import sys
 import os
 sys.path.append(os.path.dirname(__file__))
@@ -51,10 +50,9 @@ if not market_cap:
     shares = stock.info.get("sharesOutstanding")
     market_cap = price * shares if price and shares else "N/A"
 
-# Then format it properly
 def format_market_cap(val):
     if isinstance(val, str):
-        return val  # "N/A"
+        return val  
     if val >= 1e12:
         return f"${val / 1e12:.2f}T"
     elif val >= 1e9:
@@ -131,15 +129,12 @@ with col3:
     if st.button('6M'):
         num_period = '6mo'
 with col4:
-    if st.button('YTD'):
-        num_period = 'ytd'
-with col5:
     if st.button('1Y'):
         num_period = '1y'
-with col6:
+with col5:
     if st.button('5Y'):
         num_period = '5y'
-with col7:
+with col6:
     if st.button('MAX'):
         num_period = 'max'
 

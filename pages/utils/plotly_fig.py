@@ -26,15 +26,15 @@ def plotly_table(df, max_height=400):
             go.Table(
                 header=dict(
                     values=col_names,
-                    fill_color="#1a1a2e",
-                    font=dict(color="white", size=13),
+                    fill_color="#0f0f1a",
+                    font=dict(color="white", size=16),
                     align="left",
                     line_color="#1a1a2e",
                     height=36,
                 ),
                 cells=dict(
                     values=col_values,
-                    fill_color=[["#13071e", "#1e0f35"] * len(df)],
+                    fill_color=[["#1a1a2e", "#0b0b1d"] * len(df)],
                     font=dict(color="white", size=12),
                     align=["left"] + ["right"] * len(df.columns),
                     line_color=["#0f0f1a", "#1a1a2e"],
