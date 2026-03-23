@@ -10,49 +10,66 @@ from utils.plotly_fig import *
 
 st.set_page_config(
     page_title='Stock Analysis',
-    page_icon='page_with_curl',
+    page_icon='📄',
     layout='wide'
 )
 
-st.title("Stock analysis")
+@st.cache_data(ttl=300)
+def get_stock_info(ticker):
+    return yf.Ticker(ticker).info
+
+@st.cache_data(ttl=300)
+def get_stock_data(ticker, start, end):
+    return yf.download(ticker, start=start, end=end)
+
+@st.cache_data(ttl=300)
+def get_ticker_history(ticker):
+    return yf.Ticker(ticker).history(period='max')
+
+st.title("Stock Analysis")
 
 col1, col2, col3 = st.columns(3)
 
 today = datetime.date.today()
 
 with col1:
-    ticker = st.text_input('Stock ticker','TTWO')
+    ticker = st.text_input('Stock ticker', 'TTWO')
 with col2:
-    start_date = st.date_input('Choose start date:',datetime.date(today.year-1, today.month, today.day))
+    start_date = st.date_input('Choose start date:', datetime.date(today.year - 1, today.month, today.day))
 with col3:
-    end_date = st.date_input('Choose end date:',datetime.date(today.year, today.month, today.day))
+    end_date = st.date_input('Choose end date:', datetime.date(today.year, today.month, today.day))
 
 st.subheader(ticker)
 
-stock = yf.Ticker(ticker)
+try:
+    info = get_stock_info(ticker)
+except Exception as e:
+    st.error(f"Unable to fetch data for {ticker}. Please try again in a moment.")
+    st.stop()
 
-st.write(stock.info['longBusinessSummary'])
-st.write("**Sector:**",stock.info['sector'])
-st.write("**Employees:**",stock.info['fullTimeEmployees'])
-st.write("**Website:**",stock.info['website'])
+st.write(info.get('longBusinessSummary', 'N/A'))
+st.write("**Sector:**", info.get('sector', 'N/A'))
+st.write("**Employees:**", info.get('fullTimeEmployees', 'N/A'))
+st.write("**Website:**", info.get('website', 'N/A'))
 
+# ── Metrics ──────────────────────────────────────────────────────────────────
 col1, col2 = st.columns(2)
 
-trailing_pe = stock.info.get("trailingPE")
+trailing_pe = info.get("trailingPE")
 if trailing_pe is None:
-    eps = stock.info.get("trailingEps")
-    price = stock.info.get("currentPrice") or stock.info.get("regularMarketPrice")
+    eps = info.get("trailingEps")
+    price = info.get("currentPrice") or info.get("regularMarketPrice")
     trailing_pe = round(price / eps, 2) if eps and price else "N/A"
 
-market_cap = stock.info.get("marketCap")
+market_cap = info.get("marketCap")
 if not market_cap:
-    price = stock.info.get("currentPrice") or stock.info.get("regularMarketPrice")
-    shares = stock.info.get("sharesOutstanding")
+    price = info.get("currentPrice") or info.get("regularMarketPrice")
+    shares = info.get("sharesOutstanding")
     market_cap = price * shares if price and shares else "N/A"
 
 def format_market_cap(val):
     if isinstance(val, str):
-        return val  
+        return val
     if val >= 1e12:
         return f"${val / 1e12:.2f}T"
     elif val >= 1e9:
@@ -62,46 +79,48 @@ def format_market_cap(val):
     else:
         return f"${val:,.0f}"
 
-
 with col1:
-    df = pd.DataFrame(index=['Market Cap','Beta','EPS','PE Ratio'])
+    df = pd.DataFrame(index=['Market Cap', 'Beta', 'EPS', 'PE Ratio'])
     df['Value'] = [
         format_market_cap(market_cap),
-        stock.info['beta'],
-        stock.info.get('trailingEps'),
-        trailing_pe]
+        info.get('beta'),
+        info.get('trailingEps'),
+        trailing_pe
+    ]
     st.plotly_chart(plotly_table(df), use_container_width=True)
 
 with col2:
-    # Debt to Equity fallback
-    debt_to_equity = stock.info.get('debtToEquity')
+    debt_to_equity = info.get('debtToEquity')
     if debt_to_equity is None:
-        total_debt = stock.info.get('totalDebt')
-        equity = stock.info.get('totalStockholderEquity') or stock.info.get('bookValue')
-        shares = stock.info.get('sharesOutstanding')
+        total_debt = info.get('totalDebt')
+        equity = info.get('totalStockholderEquity') or info.get('bookValue')
+        shares = info.get('sharesOutstanding')
         if total_debt and equity and shares:
             debt_to_equity = round(total_debt / (equity * shares), 2)
 
-    # Return on Equity fallback
-    return_on_equity = stock.info.get('returnOnEquity')
+    return_on_equity = info.get('returnOnEquity')
     if return_on_equity is None:
-        net_income = stock.info.get('netIncomeToCommon')
-        equity = stock.info.get('totalStockholderEquity') or stock.info.get('bookValue')
-        shares = stock.info.get('sharesOutstanding')
+        net_income = info.get('netIncomeToCommon')
+        equity = info.get('totalStockholderEquity') or info.get('bookValue')
+        shares = info.get('sharesOutstanding')
         if net_income and equity and shares:
             return_on_equity = round(net_income / (equity * shares), 2)
 
     df = pd.DataFrame(index=['Quick Ratio', 'Revenue per share', 'Profit Margins', 'Debt to Equity', 'Return on Equity'])
     df['Value'] = [
-        stock.info.get('quickRatio'),
-        stock.info.get('revenuePerShare'),
-        stock.info.get('profitMargins'),
+        info.get('quickRatio'),
+        info.get('revenuePerShare'),
+        info.get('profitMargins'),
         debt_to_equity,
         return_on_equity
     ]
     st.plotly_chart(plotly_table(df), use_container_width=True)
 
-data = yf.download(ticker, start=start_date, end=end_date)
+try:
+    data = get_stock_data(ticker, start_date, end_date)
+except Exception as e:
+    st.error(f"Unable to fetch historical data. Please try again in a moment.")
+    st.stop()
 
 col1, col2, col3 = st.columns(3)
 
@@ -110,15 +129,14 @@ prev_close = float(data['Close'].iloc[-2])
 daily_change = latest_close - prev_close
 
 col1.metric("Daily change", f"${latest_close:.2f}", f"{daily_change:.2f}")
-last_10 = data.tail(10).sort_index(ascending = False).round(3)
+
+last_10 = data.tail(10).sort_index(ascending=False).round(3)
 st.write('### Last 10 days data')
-# st.table(last_10)
 st.plotly_chart(plotly_table(last_10), use_container_width=True)
 
+col1, col2, col3, col4, col5, col6 = st.columns(6)
 
-col1, col2, col3,col4, col5, col6,col7, col8, col9,col10, col11, col12 = st.columns([1,1,1,1,1,1,1,1,1,1,1,1])
-
-num_period = ''
+num_period = '1y'
 with col1:
     if st.button('5D'):
         num_period = '5d'
@@ -138,57 +156,36 @@ with col6:
     if st.button('MAX'):
         num_period = 'max'
 
-
-
-col1, col2, col3 = st.columns([1,1,4])
+col1, col2, col3 = st.columns([1, 1, 4])
 with col1:
-    chart_type = st.selectbox('',('Candle','Line'))
+    chart_type = st.selectbox('', ('Candle', 'Line'))
 with col2:
     if chart_type == 'Candle':
-        indicators = st.selectbox('',('RSI','MACD'))
+        indicators = st.selectbox('', ('RSI', 'MACD'))
     else:
-        indicators = st.selectbox('',('RSI','Moving Average','MACD'))
+        indicators = st.selectbox('', ('RSI', 'Moving Average', 'MACD'))
 
-ticker_obj = yf.Ticker(ticker)
-data1 = ticker_obj.history(period='max')
+try:
+    data1 = get_ticker_history(ticker)
+except Exception as e:
+    st.error(f"Unable to fetch chart data. Please try again in a moment.")
+    st.stop()
 
-if num_period == '':
-    num_period = '1y'
-    if chart_type == 'Candle' and indicators == "RSI":
-        st.plotly_chart(candle_stick(data1, num_period), use_container_width=True)
-        st.plotly_chart(RSI(data1, num_period), use_container_width=True)
+if chart_type == 'Candle' and indicators == "RSI":
+    st.plotly_chart(candle_stick(data1, num_period), use_container_width=True)
+    st.plotly_chart(RSI(data1, num_period), use_container_width=True)
 
-    if chart_type == 'Candle' and indicators == "MACD":
-        st.plotly_chart(candle_stick(data1, num_period), use_container_width=True)
-        st.plotly_chart(MACD(data1, num_period), use_container_width=True)
+elif chart_type == 'Candle' and indicators == "MACD":
+    st.plotly_chart(candle_stick(data1, num_period), use_container_width=True)
+    st.plotly_chart(MACD(data1, num_period), use_container_width=True)
 
-    if chart_type == 'Line' and indicators == "RSI":
-        st.plotly_chart(close_chart(data1, num_period), use_container_width=True)
-        st.plotly_chart(RSI(data1, num_period), use_container_width=True)
+elif chart_type == 'Line' and indicators == "RSI":
+    st.plotly_chart(close_chart(data1, num_period), use_container_width=True)
+    st.plotly_chart(RSI(data1, num_period), use_container_width=True)
 
-    if chart_type == 'Line' and indicators == "MACD":
-        st.plotly_chart(close_chart(data1, num_period), use_container_width=True)
-        st.plotly_chart(MACD(data1, num_period), use_container_width=True)
+elif chart_type == 'Line' and indicators == "MACD":
+    st.plotly_chart(close_chart(data1, num_period), use_container_width=True)
+    st.plotly_chart(MACD(data1, num_period), use_container_width=True)
 
-    if chart_type == 'Line' and indicators == "Moving Average":
-        st.plotly_chart(Moving_average(data1, num_period), use_container_width=True)
-
-else:
-    if chart_type == 'Candle' and indicators == "RSI":
-        st.plotly_chart(candle_stick(data1, num_period), use_container_width=True)
-        st.plotly_chart(RSI(data1, num_period), use_container_width=True)
-
-    if chart_type == 'Candle' and indicators == "MACD":
-        st.plotly_chart(candle_stick(data1, num_period), use_container_width=True)
-        st.plotly_chart(MACD(data1, num_period), use_container_width=True)
-
-    if chart_type == 'Line' and indicators == "RSI":
-        st.plotly_chart(close_chart(data1, num_period), use_container_width=True)
-        st.plotly_chart(RSI(data1, num_period), use_container_width=True)
-
-    if chart_type == 'Line' and x == "MACD":
-        st.plotly_chart(close_chart(data1, num_period), use_container_width=True)
-        st.plotly_chart(MACD(data1, num_period), use_container_width=True)
-
-    if chart_type == 'Line' and indicators == "Moving Average":
-        st.plotly_chart(Moving_average(data1, num_period), use_container_width=True)
+elif chart_type == 'Line' and indicators == "Moving Average":
+    st.plotly_chart(Moving_average(data1, num_period), use_container_width=True)
